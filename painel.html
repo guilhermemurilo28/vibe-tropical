@@ -100,12 +100,17 @@
   .kpi .val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#fff;line-height:1}
 
   /* ── CHARTS ── */
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
-  .box{background:#fff;border-radius:16px;padding:18px 20px;
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .box{background:#fff;border-radius:16px;padding:14px 16px;
     border:1px solid var(--border);box-shadow:var(--sombra)}
-  .box h3{font-family:'Syne',sans-serif;font-size:.95rem;color:var(--roxo);
-    margin-bottom:14px;font-weight:700}
+  .box h3{font-family:'Syne',sans-serif;font-size:.88rem;color:var(--roxo);
+    margin-bottom:10px;font-weight:700}
+  /* Mobile: manter 2 colunas com gráficos menores */
+  @media(max-width:600px){
+    .grid2{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .box{padding:10px 10px;border-radius:12px}
+    .box h3{font-size:.75rem;margin-bottom:6px}
+  }
 
   /* ── RANK ── */
   .rank-item{display:flex;justify-content:space-between;padding:7px 0;
@@ -223,11 +228,11 @@
 
     <!-- CHARTS -->
     <div class="grid2">
-      <div class="box"><h3>Vendas por dia</h3><canvas id="chDia" height="160"></canvas></div>
-      <div class="box"><h3>Formas de pagamento</h3><canvas id="chPg" height="160"></canvas></div>
+      <div class="box"><h3>Vendas por dia</h3><canvas id="chDia" height="110"></canvas></div>
+      <div class="box"><h3>Formas de pagamento</h3><canvas id="chPg" height="110"></canvas></div>
     </div>
     <div class="grid2">
-      <div class="box"><h3>Horários de pico</h3><canvas id="chHora" height="160"></canvas></div>
+      <div class="box"><h3>Horários de pico</h3><canvas id="chHora" height="110"></canvas></div>
       <div class="box">
         <h3>Itens mais vendidos</h3>
         <div id="rankItens"></div>
@@ -338,7 +343,7 @@ async function entrar(){
     document.getElementById('login').style.display='none';
     document.getElementById('app').style.display='block';
     const d=await r.json();pedidos=d.pedidos||[];
-    setDefaultManualDate();render();carregarStatus();carregarEsgotados();
+    setDefaultManualDate();render();carregarStatus();carregarEsgotados();marcarAtualizacao();iniciarAutoRefresh();
   }else if(r.status===401){er.textContent="Senha incorreta.";}
   else{er.textContent="Erro ao conectar. Tente de novo.";}
 }
@@ -347,7 +352,7 @@ function sair(){localStorage.removeItem('painel_senha');location.reload();}
 
 async function carregar(){
   const r=await chamar({acao:"listar"});
-  if(r.status===200){const d=await r.json();pedidos=d.pedidos||[];render();}
+  if(r.status===200){const d=await r.json();pedidos=d.pedidos||[];render();marcarAtualizacao();}
   else if(r.status===401){sair();}
 }
 
@@ -555,6 +560,52 @@ async function toggleLoja(){
 }
 
 if(senha){entrar();}
+
+// ── AUTO-REFRESH ──
+// Atualiza a cada 2 minutos, somente quando a aba está visível.
+// Evita troca constante de dados em segundo plano e não "pisca" a tela.
+const AUTO_INTERVAL_MS = 2 * 60 * 1000; // 2 minutos
+let autoTimer = null;
+
+function iniciarAutoRefresh(){
+  pararAutoRefresh();
+  autoTimer = setInterval(() => {
+    if(!document.hidden && senha) {
+      carregar();
+      atualizarRelogio();
+    }
+  }, AUTO_INTERVAL_MS);
+}
+
+function pararAutoRefresh(){
+  if(autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+}
+
+// Pausa quando aba vai para segundo plano; retoma (e carrega) ao voltar
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden && senha){
+    carregar();
+    atualizarRelogio();
+    iniciarAutoRefresh();
+  } else {
+    pararAutoRefresh();
+  }
+});
+
+// Mostra o tempo desde a última atualização no botão 🔄
+let ultimaAtualizacao = null;
+function marcarAtualizacao(){
+  ultimaAtualizacao = Date.now();
+  atualizarRelogio();
+}
+function atualizarRelogio(){
+  if(!ultimaAtualizacao) return;
+  const seg = Math.round((Date.now() - ultimaAtualizacao) / 1000);
+  const txt = seg < 60 ? `há ${seg}s` : `há ${Math.round(seg/60)}min`;
+  const btn = document.querySelector('button[onclick="carregar()"]');
+  if(btn) btn.title = `Última atualização: ${txt} — auto a cada 2min`;
+}
+setInterval(atualizarRelogio, 15000);
 </script>
 </body>
 </html>
