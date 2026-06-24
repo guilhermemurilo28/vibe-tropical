@@ -100,16 +100,18 @@
   .kpi .val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#fff;line-height:1}
 
   /* ── CHARTS ── */
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-  .box{background:#fff;border-radius:16px;padding:14px 16px;
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .box{background:#fff;border-radius:14px;padding:12px 14px;
     border:1px solid var(--border);box-shadow:var(--sombra)}
-  .box h3{font-family:'Syne',sans-serif;font-size:.88rem;color:var(--roxo);
-    margin-bottom:10px;font-weight:700}
-  /* Mobile: manter 2 colunas com gráficos menores */
-  @media(max-width:600px){
-    .grid2{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-    .box{padding:10px 10px;border-radius:12px}
-    .box h3{font-size:.75rem;margin-bottom:6px}
+  .box h3{font-family:'Syne',sans-serif;font-size:.82rem;color:var(--roxo);
+    margin-bottom:8px;font-weight:700}
+  @media(max-width:900px){
+    .grid4{grid-template-columns:1fr 1fr;gap:8px}
+  }
+  @media(max-width:480px){
+    .grid4{grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+    .box{padding:8px 10px;border-radius:10px}
+    .box h3{font-size:.7rem;margin-bottom:5px}
   }
 
   /* ── RANK ── */
@@ -227,14 +229,12 @@
     </div>
 
     <!-- CHARTS -->
-    <div class="grid2">
-      <div class="box"><h3>Vendas por dia</h3><canvas id="chDia" height="110"></canvas></div>
-      <div class="box"><h3>Formas de pagamento</h3><canvas id="chPg" height="110"></canvas></div>
-    </div>
-    <div class="grid2">
-      <div class="box"><h3>Horários de pico</h3><canvas id="chHora" height="110"></canvas></div>
+    <div class="grid4">
+      <div class="box"><h3>Vendas por dia</h3><canvas id="chDia" height="90"></canvas></div>
+      <div class="box"><h3>Pagamentos</h3><canvas id="chPg" height="90"></canvas></div>
+      <div class="box"><h3>Horários de pico</h3><canvas id="chHora" height="90"></canvas></div>
       <div class="box">
-        <h3>Itens mais vendidos</h3>
+        <h3>Mais vendidos</h3>
         <div id="rankItens"></div>
       </div>
     </div>
