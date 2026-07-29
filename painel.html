@@ -90,7 +90,7 @@
 <!-- LOGIN -->
 <div id="telaLogin">
   <div class="cardLogin">
-    <h2>🍞 Painel do Delivery</h2>
+    <h2>📊 Painel do Delivery</h2>
     <p>Acesso restrito ao proprietário</p>
     <input type="password" id="inSenha" placeholder="Senha" onkeydown="if(event.key==='Enter')login()">
     <button class="btn" style="width:100%" onclick="login()">Entrar</button>
@@ -102,7 +102,7 @@
 <div id="app">
 <div class="topo">
   <div class="esc">
-    <h1 id="painelNome">🍞 Delivery <small style="color:#fff;font-weight:400">Painel de Vendas</small></h1>
+    <h1 id="painelNome">Painel <small style="color:#fff;font-weight:400">de Vendas</small></h1>
     <button class="btn" onclick="abrirModal('mVenda')">➕ Novo pedido</button>
     <button class="btn" onclick="abrirCardapio()">🍽️ Cardápio</button>
     <button class="btn" onclick="abrirCupons()">🎟️ Cupons</button>
@@ -175,7 +175,7 @@
   <label>Data e hora</label><input type="datetime-local" id="vData">
   <label>Cliente (opcional)</label><input type="text" id="vCliente">
   <label>Telefone (opcional)</label><input type="tel" id="vFone">
-  <label>Item / descrição</label><input type="text" id="vDesc" placeholder="Ex.: 2 marmitas tradicionais">
+  <label>Item / descrição</label><input type="text" id="vDesc" placeholder="Ex.: 2 itens do cardápio">
   <label>Qtd</label><input type="number" id="vQtd" value="1" min="1">
   <label>Valor total (R$)</label><input type="number" id="vTotal" step="0.01" min="0">
   <label>Pagamento</label>
@@ -355,11 +355,17 @@ async function carregarConfigPublica(){
     if(d&&d[0]){
       LOJA=d[0].loja_aberta;
       document.getElementById('cbPct').value=Number(d[0].cashback_pct)||0;
+      if(d[0].nome){
+        LOJA_NOME=d[0].nome;
+        const emoji=d[0].emoji?d[0].emoji+' ':'';
+        document.getElementById('painelNome').innerHTML=emoji+esc(d[0].nome)+' <small style="color:#fff;font-weight:400">Painel de Vendas</small>';
+        document.title=d[0].nome+' — Painel';
+      }
       pintarLoja();
     }
   }catch(e){}
 }
-let LOJA=null;
+let LOJA=null, LOJA_NOME='Delivery';
 function pintarLoja(){
   const t=document.getElementById('lojaTxt');
   t.innerHTML=LOJA?'<span class="bolinha" style="background:var(--verde)"></span> <strong style="color:#1a7d3c">Aberta</strong>'
@@ -759,7 +765,7 @@ function baixarCSV(){
   const csv='﻿'+linhas.map(l=>l.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\r\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='vendas-pao-caseiro-elane.csv'; a.click();
+  a.download='vendas-'+LOJA_NOME.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.csv'; a.click();
 }
 
 /* ===== MODAIS ===== */

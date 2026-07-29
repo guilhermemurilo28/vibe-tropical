@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pão Caseiro da Elane — Delivery</title>
+<title>Cardápio Digital</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -174,7 +174,7 @@
 <body>
 
 <header>
-  <h1 id="lojaNome">🍞 Delivery</h1>
+  <h1 id="lojaNome">Cardápio</h1>
   <p class="tagline" id="lojaTagline"></p>
   <p id="lojaCidade"></p>
   <span class="status" id="statusLoja">● Aberto agora</span>
@@ -184,7 +184,7 @@
 
 <main>
   <div class="busca-box">
-    <input type="search" id="busca" placeholder="🔍 Buscar no cardápio... (ex.: yakisoba, marmita)" oninput="filtrarBusca(this.value)">
+    <input type="search" id="busca" placeholder="🔍 Buscar no cardápio..." oninput="filtrarBusca(this.value)">
   </div>
   <div id="anuncios" class="anuncios" aria-label="Anúncios"></div>
   <div id="conteudo"></div>
@@ -318,9 +318,11 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 
 /* Status Aberto/Fechado (controlado no painel) */
 let LOJA_ABERTA = true;
+let LOJA_NOME = 'Delivery', LOJA_EMOJI = '';
 function aplicarIdentidade(c){
   if(!c) return;
   const emoji=c.emoji?c.emoji+' ':'';
+  if(c.nome){ LOJA_NOME=c.nome; LOJA_EMOJI=c.emoji||''; }
   const nome=document.getElementById('lojaNome');
   if(nome && c.nome){ nome.textContent=emoji+c.nome; document.title=c.nome+' — Delivery'; }
   const tag=document.getElementById('lojaTagline'); if(tag) tag.textContent=c.tagline||'';
@@ -823,7 +825,7 @@ async function enviarWhatsApp(){
   const link=location.origin+location.pathname+'?pedido='+ped.id;
   const SEP='━━━━━━━━━━━━━━';
   const L=[];
-  L.push('🍞 *PÃO CASEIRO DA ELANE*');
+  L.push((LOJA_EMOJI?LOJA_EMOJI+' ':'')+'*'+LOJA_NOME.toUpperCase()+'*');
   L.push('🧾 Pedido *#'+num+'*');
   L.push(SEP);
   L.push('👤 *'+nome+'*');
